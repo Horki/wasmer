@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lib/c-api/src/wasm_c_api/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="https://wasmer.io/static/icons/favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../wasmer_c_api/index.html'><div class='logo-container'><img src='https://github.com/wasmerio.png?size=200' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lib/c-api/src/wasm_c_api/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="https://wasmer.io/images/icons/favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../wasmer_c_api/index.html'><div class='logo-container'><img src='https://github.com/wasmerio.png?size=200' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -320,6 +320,50 @@
 <span id="319">319</span>
 <span id="320">320</span>
 <span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Implementation of the [official WebAssembly C</span>
 <span class="doccomment">//! API](https://github.com/WebAssembly/wasm-c-api) for Wasmer.</span>
@@ -328,7 +372,7 @@
 <span class="doccomment">//! be characterized as a _living standard_. As such, the API is not</span>
 <span class="doccomment">//! yet stable, even though it shows maturity over time. The API is</span>
 <span class="doccomment">//! described by the `wasm.h` C header, which is included by</span>
-<span class="doccomment">//! `wasmer_wasm.h` C header file (which contains extension of the</span>
+<span class="doccomment">//! `wasmer.h` C header file (which contains extension of the</span>
 <span class="doccomment">//! standard API, for example to provide WASI or vendor-specific</span>
 <span class="doccomment">//! features).</span>
 <span class="doccomment">//!</span>
@@ -362,7 +406,7 @@
 <span class="doccomment">/// # use inline_c::assert_c;</span>
 <span class="doccomment">/// # fn main() {</span>
 <span class="doccomment">/// #    (assert_c! {</span>
-<span class="doccomment">/// # #include &quot;tests/wasmer_wasm.h&quot;</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
 <span class="doccomment">/// #</span>
 <span class="doccomment">/// int main() {</span>
 <span class="doccomment">///     // Create the engine.</span>
@@ -406,7 +450,7 @@
 <span class="doccomment">/// # use inline_c::assert_c;</span>
 <span class="doccomment">/// # fn main() {</span>
 <span class="doccomment">/// #    (assert_c! {</span>
-<span class="doccomment">/// # #include &quot;tests/wasmer_wasm.h&quot;</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
 <span class="doccomment">/// #</span>
 <span class="doccomment">/// int main() {</span>
 <span class="doccomment">///     // Create the engine and the store.</span>
@@ -464,7 +508,7 @@
 <span class="doccomment">/// # use inline_c::assert_c;</span>
 <span class="doccomment">/// # fn main() {</span>
 <span class="doccomment">/// #    (assert_c! {</span>
-<span class="doccomment">/// # #include &quot;tests/wasmer_wasm.h&quot;</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
 <span class="doccomment">/// #</span>
 <span class="doccomment">/// int main() {</span>
 <span class="doccomment">///     // Create the engine and the store.</span>
@@ -521,7 +565,7 @@
 <span class="doccomment">/// # use inline_c::assert_c;</span>
 <span class="doccomment">/// # fn main() {</span>
 <span class="doccomment">/// #    (assert_c! {</span>
-<span class="doccomment">/// # #include &quot;tests/wasmer_wasm.h&quot;</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
 <span class="doccomment">/// #</span>
 <span class="doccomment">/// int main() {</span>
 <span class="doccomment">///     // Create the engine.</span>
@@ -547,6 +591,50 @@
 <span class="doccomment">/// cbindgen:ignore</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">store</span>;
 
+<span class="doccomment">/// A trap represents an error which stores trace message with</span>
+<span class="doccomment">/// backtrace.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Example</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust</span>
+<span class="doccomment">/// # use inline_c::assert_c;</span>
+<span class="doccomment">/// # fn main() {</span>
+<span class="doccomment">/// #    (assert_c! {</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
+<span class="doccomment">/// #</span>
+<span class="doccomment">/// int main() {</span>
+<span class="doccomment">///     // Create an engine and a store.</span>
+<span class="doccomment">///     wasm_engine_t* engine = wasm_engine_new();</span>
+<span class="doccomment">///     wasm_store_t* store = wasm_store_new(engine);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     // Create the trap message.</span>
+<span class="doccomment">///     wasm_message_t message;</span>
+<span class="doccomment">///     wasm_name_new_from_string_nt(&amp;message, &quot;foobar&quot;);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     // Create the trap with its message.</span>
+<span class="doccomment">///     // The backtrace will be generated automatically.</span>
+<span class="doccomment">///     wasm_trap_t* trap = wasm_trap_new(store, &amp;message);</span>
+<span class="doccomment">///     assert(trap);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     wasm_name_delete(&amp;message);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     // Do something with the trap.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     // Free everything.</span>
+<span class="doccomment">///     wasm_trap_delete(trap);</span>
+<span class="doccomment">///     wasm_store_delete(store);</span>
+<span class="doccomment">///     wasm_engine_delete(engine);</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///     return 0;</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// #    })</span>
+<span class="doccomment">/// #    .success();</span>
+<span class="doccomment">/// # }</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Usually, a trap is returned from a host function (an imported</span>
+<span class="doccomment">/// function).</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// cbindgen:ignore</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">trap</span>;
 
@@ -567,7 +655,7 @@
 
 <span class="doccomment">/// Wasmer-specific API to get or query the version of this Wasm C API.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The `wasmer_wasm.h` file provides the `WASMER_VERSION`,</span>
+<span class="doccomment">/// The `wasmer.h` file provides the `WASMER_VERSION`,</span>
 <span class="doccomment">/// `WASMER_VERSION_MAJOR`, `WASMER_VERSION_MINOR`,</span>
 <span class="doccomment">/// `WASMER_VERSION_PATCH` and `WASMER_VERSION_PRE`</span>
 <span class="doccomment">/// constants. However, in absence of this header file, it is possible</span>
@@ -584,7 +672,7 @@
 <span class="doccomment">/// # use inline_c::assert_c;</span>
 <span class="doccomment">/// # fn main() {</span>
 <span class="doccomment">/// #    (assert_c! {</span>
-<span class="doccomment">/// # #include &quot;tests/wasmer_wasm.h&quot;</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
 <span class="doccomment">/// #</span>
 <span class="doccomment">/// int main() {</span>
 <span class="doccomment">///     // Get and print the version.</span>
@@ -616,7 +704,7 @@
 <span class="doccomment">/// # use inline_c::assert_c;</span>
 <span class="doccomment">/// # fn main() {</span>
 <span class="doccomment">/// #    (assert_c! {</span>
-<span class="doccomment">/// # #include &quot;tests/wasmer_wasm.h&quot;</span>
+<span class="doccomment">/// # #include &quot;tests/wasmer.h&quot;</span>
 <span class="doccomment">/// #</span>
 <span class="doccomment">/// int main() {</span>
 <span class="doccomment">///     // Our WAT module.</span>
@@ -643,4 +731,5 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wat&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">wat</span>;
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "wasmer_c_api";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wasmer_c_api"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
