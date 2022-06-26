@@ -1462,17 +1462,6 @@
 <span id="1460">1460</span>
 <span id="1461">1461</span>
 <span id="1462">1462</span>
-<span id="1463">1463</span>
-<span id="1464">1464</span>
-<span id="1465">1465</span>
-<span id="1466">1466</span>
-<span id="1467">1467</span>
-<span id="1468">1468</span>
-<span id="1469">1469</span>
-<span id="1470">1470</span>
-<span id="1471">1471</span>
-<span id="1472">1472</span>
-<span id="1473">1473</span>
 </pre><pre class="rust"><code><span class="comment">// This file contains code from external sources.</span>
 <span class="comment">// Attributions: https://github.com/wasmerio/wasmer/blob/master/ATTRIBUTIONS.md</span>
 
@@ -1496,20 +1485,18 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::table</span>::{<span class="ident">Table</span>, <span class="ident">TableElement</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::trap</span>::{<span class="ident">catch_traps</span>, <span class="ident">Trap</span>, <span class="ident">TrapCode</span>, <span class="ident">TrapHandler</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::vmcontext</span>::{
-    <span class="ident">VMBuiltinFunctionsArray</span>, <span class="ident">VMCallerCheckedAnyfunc</span>, <span class="ident">VMContext</span>, <span class="ident">VMFunctionBody</span>,
-    <span class="ident">VMFunctionEnvironment</span>, <span class="ident">VMFunctionImport</span>, <span class="ident">VMFunctionKind</span>, <span class="ident">VMGlobalDefinition</span>, <span class="ident">VMGlobalImport</span>,
-    <span class="ident">VMMemoryDefinition</span>, <span class="ident">VMMemoryImport</span>, <span class="ident">VMSharedSignatureIndex</span>, <span class="ident">VMTableDefinition</span>, <span class="ident">VMTableImport</span>,
-    <span class="ident">VMTrampoline</span>,
+    <span class="ident">VMBuiltinFunctionsArray</span>, <span class="ident">VMCallerCheckedAnyfunc</span>, <span class="ident">VMContext</span>, <span class="ident">VMFunctionEnvironment</span>,
+    <span class="ident">VMFunctionImport</span>, <span class="ident">VMFunctionKind</span>, <span class="ident">VMGlobalDefinition</span>, <span class="ident">VMGlobalImport</span>, <span class="ident">VMMemoryDefinition</span>,
+    <span class="ident">VMMemoryImport</span>, <span class="ident">VMSharedSignatureIndex</span>, <span class="ident">VMTableDefinition</span>, <span class="ident">VMTableImport</span>, <span class="ident">VMTrampoline</span>,
 };
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">FunctionBodyPtr</span>, <span class="ident">VMOffsets</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">FunctionBodyPtr</span>, <span class="ident">VMFunctionBody</span>, <span class="ident">VMOffsets</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">VMFunction</span>, <span class="ident">VMGlobal</span>, <span class="ident">VMMemory</span>, <span class="ident">VMTable</span>};
-<span class="kw">use</span> <span class="ident">loupe</span>::{<span class="ident">MemoryUsage</span>, <span class="ident">MemoryUsageTracker</span>};
 <span class="kw">use</span> <span class="ident">memoffset::offset_of</span>;
 <span class="kw">use</span> <span class="ident">more_asserts::assert_lt</span>;
 <span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::cell::RefCell</span>;
 <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
-<span class="kw">use</span> <span class="ident">std::convert</span>::{<span class="ident">TryFrom</span>, <span class="ident">TryInto</span>};
+<span class="kw">use</span> <span class="ident">std::convert::TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std::ffi</span>;
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
 <span class="kw">use</span> <span class="ident">std::mem</span>;
@@ -1534,7 +1521,6 @@
 <span class="doccomment">/// contain various data. That&#39;s why the type has a C representation</span>
 <span class="doccomment">/// to ensure that the `vmctx` field is last. See the documentation of</span>
 <span class="doccomment">/// the `vmctx` field to learn more.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">MemoryUsage</span>)]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Instance</span> {
     <span class="doccomment">/// The `ModuleInfo` this `Instance` was instantiated from.</span>
@@ -1556,7 +1542,6 @@
     <span class="ident">functions</span>: <span class="ident">BoxedSlice</span><span class="op">&lt;</span><span class="ident">LocalFunctionIndex</span>, <span class="ident">FunctionBodyPtr</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Pointers to function call trampolines in executable memory.</span>
-    <span class="attribute">#[<span class="ident">loupe</span>(<span class="ident">skip</span>)]</span>
     <span class="ident">function_call_trampolines</span>: <span class="ident">BoxedSlice</span><span class="op">&lt;</span><span class="ident">SignatureIndex</span>, <span class="ident">VMTrampoline</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Passive elements in this instantiation. As `elem.drop`s happen, these</span>
@@ -1586,7 +1571,6 @@
     <span class="doccomment">/// field is last, and represents a dynamically-sized array that</span>
     <span class="doccomment">/// extends beyond the nominal end of the struct (similar to a</span>
     <span class="doccomment">/// flexible array member).</span>
-    <span class="attribute">#[<span class="ident">loupe</span>(<span class="ident">skip</span>)]</span>
     <span class="ident">vmctx</span>: <span class="ident">VMContext</span>,
 }
 
@@ -1669,12 +1653,6 @@
             }
             <span class="ident"><span class="self">Self</span>::NoEnv</span> =&gt; (),
         }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">MemoryUsage</span> <span class="kw">for</span> <span class="ident">ImportFunctionEnv</span> {
-    <span class="kw">fn</span> <span class="ident">size_of_val</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">MemoryUsageTracker</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">mem::size_of_val</span>(<span class="self">self</span>)
     }
 }
 
@@ -2344,7 +2322,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This is more or less a public facade of the private `Instance`,</span>
 <span class="doccomment">/// providing useful higher-level API.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">MemoryUsage</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InstanceHandle</span> {
     <span class="doccomment">/// The [`InstanceRef`]. See its documentation to learn more.</span>
     <span class="ident">instance</span>: <span class="ident">InstanceRef</span>,
@@ -2539,7 +2517,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">field</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">VMExtern</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">export</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">module_ref</span>().<span class="ident">exports</span>.<span class="ident">get</span>(<span class="ident">field</span>)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">lookup_by_declaration</span>(<span class="kw-2">&amp;</span><span class="ident">export</span>))
+        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">lookup_by_declaration</span>(<span class="ident">export</span>))
     }
 
     <span class="doccomment">/// Lookup an export with the given export declaration.</span>
@@ -2774,7 +2752,7 @@
         <span class="kw">let</span> <span class="ident">import</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">imported_memory</span>(<span class="ident">init</span>.<span class="ident">location</span>.<span class="ident">memory_index</span>);
         <span class="kw-2">*</span><span class="ident">import</span>.<span class="ident">definition</span>.<span class="ident">as_ref</span>()
     };
-    <span class="ident">slice::from_raw_parts_mut</span>(<span class="ident">memory</span>.<span class="ident">base</span>, <span class="ident">memory</span>.<span class="ident">current_length</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())
+    <span class="ident">slice::from_raw_parts_mut</span>(<span class="ident">memory</span>.<span class="ident">base</span>, <span class="ident">memory</span>.<span class="ident">current_length</span>)
 }
 
 <span class="doccomment">/// Compute the offset for a table element initializer.</span>
@@ -2862,7 +2840,7 @@
         <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">get_memory_init_start</span>(<span class="ident">init</span>, <span class="ident">instance</span>);
         <span class="kw">if</span> <span class="ident">start</span>
             .<span class="ident">checked_add</span>(<span class="ident">init</span>.<span class="ident">data</span>.<span class="ident">len</span>())
-            .<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">end</span><span class="op">|</span> <span class="ident">end</span> <span class="op">&gt;</span> <span class="ident">memory</span>.<span class="ident">current_length</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>())
+            .<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">end</span><span class="op">|</span> <span class="ident">end</span> <span class="op">&gt;</span> <span class="ident">memory</span>.<span class="ident">current_length</span>)
         {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Trap::lib</span>(<span class="ident">TrapCode::HeapAccessOutOfBounds</span>));
         }
